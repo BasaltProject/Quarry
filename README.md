@@ -32,31 +32,27 @@ read from it leave.
 
 ## Building
 
-Requires JDK 25. Gradle comes with the repository.
-
-```bash
-./gradlew installDist
-```
-
-The executable is `build/install/quarry/bin/quarry`.
+Requires JDK 25. Gradle comes with the repository, so there is nothing to install.
 
 ## Usage
 
-```
-quarry extract <server.jar> [--work <dir>] [--java <java>] [--javac <javac>] [--heap <size>]
-quarry version <server.jar>
+```bash
+./gradlew extract -Pquarry.jar=<server.jar>
 ```
 
 `<server.jar>` is the bundler jar Mojang distributes (the one with `META-INF/versions/` inside), not the unpacked
-server jar. `quarry version` prints the game version it carries.
+server jar. `extract` works in `build/quarry/` and does four things:
 
-`extract` does three things, in the work directory (`build/quarry/<version>` unless `--work` says otherwise):
-
-1. Unpacks the bundler: the real server jar under `versions/` and its libraries under `libraries/`.
+1. Unpacks the bundler: the real server jar and its libraries under `vanilla/`.
 2. Runs the jar's own report generator (`--reports`) into `generated/`: the registries, the block states, the
    packets and the item components.
-3. Compiles the harnesses in `src/main/resources/harness/` against the unpacked jar and runs them in one JVM,
-   writing what vanilla keeps in code as tab-separated files under `dumps/`.
+3. Compiles the harnesses in `src/dump/kotlin/` against that jar. They call the game's own classes, so they are built
+   against the version being extracted, and a version that changes one of those classes breaks the build there.
+4. Runs them in one JVM, bootstrapping the real registries and binding the vanilla tags, and writes what vanilla
+   keeps in code as tab-separated files under `dumps/`.
+
+`build/install/quarry/bin/quarry` (from `./gradlew installDist`) has two small commands: `version <server.jar>` prints
+the game version a bundler carries, and `unpack <server.jar> <dir>` does step 1 alone.
 
 | Dump | Holds |
 |---|---|
@@ -67,7 +63,7 @@ server jar. `quarry version` prints the game version it carries.
 | `block_entities.tsv`, `entities.tsv` | Block entity and entity types, shapes and attributes |
 | `world.tsv`, `map_colors.tsv`, `block_sounds.tsv` | Points of interest, biome order, map colours, block sounds |
 
-A step that fails stops the run and names its log (`reports.log`, `javac.log`, `harness.log`) in the work directory.
+A failing step stops the run, and Gradle names the task that failed.
 
 ## License
 
