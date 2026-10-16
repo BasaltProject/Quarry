@@ -1,0 +1,219 @@
+// Generated from the real @version@ server jar. Regenerate rather than edit: every number here is a
+// fact about the game, not a decision.
+
+#include <basalt/server/registry/VanillaTables.hpp>
+
+#include <array>
+#include <cstdint>
+#include <initializer_list>
+#include <string>
+
+namespace basalt::server::registry {
+namespace {
+
+/// Assembled at load rather than written as one literal: a compiler is only required to accept
+/// 64 KB of string, and one of these tables is longer than that.
+std::string join(std::initializer_list<std::string_view> parts) {
+    std::size_t size = 0;
+    for (const std::string_view part : parts) {
+        size += part.size();
+    }
+    std::string out;
+    out.reserve(size);
+    for (const std::string_view part : parts) {
+        out.append(part);
+    }
+    return out;
+}
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kItemIdsTable@> kItemIdsTable = {{
+@body:kItemIdsTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kEntityTypeIdsTable@> kEntityTypeIdsTable = {{
+@body:kEntityTypeIdsTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kParticleTypeIdsTable@> kParticleTypeIdsTable = {{
+@body:kParticleTypeIdsTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kDataComponentIdsTable@> kDataComponentIdsTable = {{
+@body:kDataComponentIdsTable@
+}};
+
+constexpr std::array<std::string_view, @size:kBlockEntityTypeNamesTable@> kBlockEntityTypeNamesTable = {{
+@body:kBlockEntityTypeNamesTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kBlockEntityOwnersTable@> kBlockEntityOwnersTable = {{
+@body:kBlockEntityOwnersTable@
+}};
+
+constexpr std::array<std::string_view, @size:kBlockShapes@> kBlockShapes = {{
+@body:kBlockShapes@
+}};
+
+const std::string kBlockShapeIndexTable = join(@join:kBlockShapeIndexTable@);
+
+constexpr std::array<std::string_view, @size:kSupportRulesTable@> kSupportRulesTable = {{
+@body:kSupportRulesTable@
+}};
+
+constexpr std::array<std::string_view, @size:kSupportSetsTable@> kSupportSetsTable = {{
+@body:kSupportSetsTable@
+}};
+
+constexpr std::array<std::int32_t, @size:kRandomTickingStatesTable@> kRandomTickingStatesTable = {{
+@body:kRandomTickingStatesTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::int32_t>, @size:kFuelValuesTable@> kFuelValuesTable = {{
+@body:kFuelValuesTable@
+}};
+
+constexpr std::array<std::int32_t, @size:kRedstoneConductorStatesTable@> kRedstoneConductorStatesTable = {{
+@body:kRedstoneConductorStatesTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kPushReactionsTable@> kPushReactionsTable = {{
+@body:kPushReactionsTable@
+}};
+
+constexpr std::array<BrewingMix, @size:kBrewingMixesTable@> kBrewingMixesTable = {{
+@body:kBrewingMixesTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kWeatheringStepsTable@> kWeatheringStepsTable = {{
+@body:kWeatheringStepsTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::int32_t>, @size:kBlockMapColorsTable@> kBlockMapColorsTable = {{
+@body:kBlockMapColorsTable@
+}};
+
+constexpr std::array<std::int32_t, @size:kMapColorsTable@> kMapColorsTable = {{
+@body:kMapColorsTable@
+}};
+
+constexpr std::array<FireOddsEntry, @size:kFireOddsTable@> kFireOddsTable = {{
+@body:kFireOddsTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kBlockFamiliesTable@> kBlockFamiliesTable = {{
+@body:kBlockFamiliesTable@
+}};
+
+constexpr std::array<std::string_view, @size:kItemStackingTable@> kItemStackingTable = {{
+@body:kItemStackingTable@
+}};
+
+constexpr std::array<std::string_view, @size:kItemArmourTable@> kItemArmourTable = {{
+@body:kItemArmourTable@
+}};
+
+constexpr std::array<std::string_view, @size:kItemFoodTable@> kItemFoodTable = {{
+@body:kItemFoodTable@
+}};
+
+constexpr std::array<std::string_view, @size:kItemWeaponsTable@> kItemWeaponsTable = {{
+@body:kItemWeaponsTable@
+}};
+
+constexpr std::array<std::string_view, @size:kPortalBlockStateSpecsTable@> kPortalBlockStateSpecsTable = {{
+@body:kPortalBlockStateSpecsTable@
+}};
+
+constexpr std::array<std::string_view, @size:kVillageBlockStateSpecsTable@> kVillageBlockStateSpecsTable = {{
+@body:kVillageBlockStateSpecsTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kBlockInstrumentsTable@> kBlockInstrumentsTable = {{
+@body:kBlockInstrumentsTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kCraftingRemaindersTable@> kCraftingRemaindersTable = {{
+@body:kCraftingRemaindersTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kItemBlocksTable@> kItemBlocksTable = {{
+@body:kItemBlocksTable@
+}};
+
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kTrimMaterialsTable@> kTrimMaterialsTable = {{
+@body:kTrimMaterialsTable@
+}};
+
+const std::string kBlockSupportIndexTable = join(@join:kBlockSupportIndexTable@);
+
+} // namespace
+
+std::span<const std::pair<std::int32_t, std::string_view>> itemIdsTable() { return kItemIdsTable; }
+
+std::span<const std::pair<std::int32_t, std::string_view>> entityTypeIdsTable() { return kEntityTypeIdsTable; }
+
+std::span<const std::pair<std::int32_t, std::string_view>> particleTypeIdsTable() { return kParticleTypeIdsTable; }
+
+std::span<const std::pair<std::int32_t, std::string_view>> dataComponentIdsTable() { return kDataComponentIdsTable; }
+
+std::span<const std::string_view> blockEntityTypeNamesTable() { return kBlockEntityTypeNamesTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> blockEntityOwnersTable() {
+    return kBlockEntityOwnersTable;
+}
+
+std::span<const std::string_view> blockShapeSpecsTable() { return kBlockShapes; }
+
+std::string_view blockShapeIndexTable() { return kBlockShapeIndexTable; }
+
+std::span<const std::string_view> supportRulesTable() { return kSupportRulesTable; }
+
+std::span<const std::string_view> supportSetsTable() { return kSupportSetsTable; }
+
+std::span<const std::int32_t> randomTickingStatesTable() { return kRandomTickingStatesTable; }
+
+std::span<const std::pair<std::string_view, std::int32_t>> fuelValuesTable() { return kFuelValuesTable; }
+
+std::span<const std::int32_t> redstoneConductorStatesTable() { return kRedstoneConductorStatesTable; }
+
+std::span<const std::pair<std::int32_t, std::string_view>> pushReactionsTable() { return kPushReactionsTable; }
+
+std::span<const BrewingMix> brewingMixesTable() { return kBrewingMixesTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> weatheringStepsTable() { return kWeatheringStepsTable; }
+
+std::span<const FireOddsEntry> fireOddsTable() { return kFireOddsTable; }
+
+std::span<const std::pair<std::int32_t, std::int32_t>> blockMapColorsTable() { return kBlockMapColorsTable; }
+
+std::span<const std::int32_t> mapColorsTable() { return kMapColorsTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> blockFamiliesTable() { return kBlockFamiliesTable; }
+
+std::span<const std::string_view> itemStackingTable() { return kItemStackingTable; }
+
+std::span<const std::string_view> itemArmourTable() { return kItemArmourTable; }
+
+std::span<const std::string_view> itemFoodTable() { return kItemFoodTable; }
+
+std::span<const std::string_view> itemWeaponsTable() { return kItemWeaponsTable; }
+
+std::span<const std::string_view> portalBlockStateSpecsTable() { return kPortalBlockStateSpecsTable; }
+
+std::span<const std::string_view> villageBlockStateSpecsTable() { return kVillageBlockStateSpecsTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> blockInstrumentsTable() {
+    return kBlockInstrumentsTable;
+}
+
+std::span<const std::pair<std::string_view, std::string_view>> craftingRemaindersTable() {
+    return kCraftingRemaindersTable;
+}
+
+std::span<const std::pair<std::string_view, std::string_view>> itemBlocksTable() { return kItemBlocksTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> trimMaterialsTable() { return kTrimMaterialsTable; }
+
+std::string_view blockSupportIndexTable() { return kBlockSupportIndexTable; }
+
+} // namespace basalt::server::registry

@@ -1,0 +1,125 @@
+#pragma once
+
+#include <cstdint>
+#include <optional>
+#include <span>
+#include <string_view>
+
+namespace basalt::server::registry {
+
+/// How a block underfoot changes the way something moves over it.
+struct BlockMovementEntry {
+    std::string_view block;
+    float friction;
+    float speedFactor;
+    float jumpFactor;
+    float bounciness;
+};
+
+/// A block's `SoundType`: its volume and pitch and the sound of breaking, stepping on, placing,
+/// hitting and falling onto it.
+struct BlockSoundTypeEntry {
+    float volume;
+    float pitch;
+    std::string_view breakSound;
+    std::string_view stepSound;
+    std::string_view placeSound;
+    std::string_view hitSound;
+    std::string_view fallSound;
+};
+
+/// Which of those a block has, by its index in `blockSoundTypesTable`.
+struct BlockSoundEntry {
+    std::string_view block;
+    std::int32_t soundType;
+};
+
+/// What one kind of mob starts with: its health, how fast it walks, how far it notices you.
+struct EntityAttributeEntry {
+    std::string_view entity;
+    std::string_view attribute;
+    double value;
+};
+
+/// How much use an item takes before it breaks.
+struct ItemDurabilityEntry {
+    std::string_view item;
+    std::int32_t maxDamage;
+    std::int32_t damagePerBlock;
+    std::int32_t damagePerAttack;
+};
+
+/// How big an entity is and how the server tracks it.
+struct EntityTypeShape {
+    std::string_view entity;
+    float width;
+    float height;
+    std::string_view category;
+    std::int32_t trackingRange;
+    std::int32_t updateInterval;
+    bool fireImmune;
+    bool farFromPlayer;
+};
+
+/// One rule of one tool: which blocks it applies to, whether they drop, and how fast.
+///
+/// Flattened, with the item repeated on each of its rules: a tool has two or three and the
+/// rows of one tool are contiguous, so the shape a nested list would give buys nothing.
+struct ToolRule {
+    std::string_view item;
+    std::string_view blockTag;
+    bool correctForDrops;
+    /// Absent where the rule only says whether the block drops, which is what the
+    /// `incorrect_for_...` tags do.
+    std::optional<float> speed;
+};
+
+/// The blocks that move an entity differently from every other block: ice is slippery, soul
+/// sand is slow, honey kills a jump and a bed bounces. Anything absent is the default 0.6
+/// friction, with no change to speed or jump and no bounce at all.
+///
+/// Not reported by the data generator, so it comes from a harness run against the real
+/// classes (see `basalt.datagen`).
+[[nodiscard]] std::span<const BlockMovementEntry> blockMovementTable();
+
+/// Every distinct `SoundType`, stone's first, and the blocks that do not sound like stone.
+///
+/// Code and not data in the jar, so it comes from a harness run against the real classes, off each
+/// block's default state: the decorated pot is the one block whose sound changes with its state.
+[[nodiscard]] std::span<const BlockSoundTypeEntry> blockSoundTypesTable();
+
+[[nodiscard]] std::span<const BlockSoundEntry> blockSoundsTable();
+
+/// Every living entity type's own attribute base values, from the real registry: what each mob
+/// starts with before anything modifies it.
+///
+/// Vanilla builds these in each class's `createAttributes`, which is code and not data, so they
+/// come from a harness run against the real registry (see `basalt.datagen`).
+[[nodiscard]] std::span<const EntityAttributeEntry> entityAttributesTable();
+
+/// Every damageable item, from the real server jar's own item component reports: how much
+/// wear it survives (`minecraft:max_damage`), what breaking one block costs it
+/// (`minecraft:tool`'s `damage_per_block`) and what one attack costs it
+/// (`minecraft:weapon`'s `item_damage_per_attack`).
+///
+/// An item missing from here has no durability at all, which is not the same as having a
+/// large one: it never wears and never breaks.
+[[nodiscard]] std::span<const ItemDurabilityEntry> itemDurabilityTable();
+
+/// Every entity type's box, the category it spawns under, how far a client tracks it and how
+/// often it is told about it.
+///
+/// Not reported by the data generator: vanilla builds all of it in `EntityType.Builder`, so it
+/// comes from a harness run against the real registry (see `basalt.datagen`).
+[[nodiscard]] std::span<const EntityTypeShape> entityTypeShapesTable();
+
+/// Every tool item's mining rules, from the real server jar's own item component reports
+/// (`minecraft:tool`). Each rule is a block tag, whether the tool is correct for that tag's
+/// drops, and how fast it mines it.
+///
+/// Order matters and is preserved: vanilla applies the first rule whose tag contains the
+/// block, and every tool lists its `incorrect_for_<tier>_tool` exclusion before the general
+/// `mineable/<kind>` rule so the exclusion wins.
+[[nodiscard]] std::span<const ToolRule> itemToolsTable();
+
+} // namespace basalt::server::registry

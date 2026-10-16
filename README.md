@@ -51,8 +51,9 @@ server jar. `extract` works in `build/quarry/` and does four things:
 4. Runs them in one JVM, bootstrapping the real registries and binding the vanilla tags, and writes what vanilla
    keeps in code as tab-separated files under `dumps/`.
 
-`build/install/quarry/bin/quarry` (from `./gradlew installDist`) has two small commands: `version <server.jar>` prints
-the game version a bundler carries, and `unpack <server.jar> <dir>` does step 1 alone.
+`build/install/quarry/bin/quarry` (from `./gradlew installDist`) has three commands: `version <server.jar>` prints
+the game version a bundler carries, `unpack <server.jar> <dir>` does step 1 alone and `generate` is the last step of
+the task of the same name.
 
 | Dump | Holds |
 |---|---|
@@ -64,6 +65,18 @@ the game version a bundler carries, and `unpack <server.jar> <dir>` does step 1 
 | `world.tsv`, `map_colors.tsv`, `block_sounds.tsv` | Points of interest, biome order, map colours, block sounds |
 
 A failing step stops the run, and Gradle names the task that failed.
+
+## Generating the tables
+
+```bash
+./gradlew generate -Pquarry.jar=<server.jar> -Pquarry.version=<game version> \
+    -Pquarry.out=<Server checkout> -Pquarry.style=<Server checkout>/.clang-format
+```
+
+`generate` runs `extract` and then fills the templates in `src/main/resources/templates/` with tables built from
+the reports and the dumps (`src/main/kotlin/.../tables/`), formats them with `clang-format` and writes them under
+`<out>/server-registry/`. Every number in those files is a fact read from the jar, so a new Minecraft version is a
+rerun, not an edit. `<out>` can be any directory, which is handy for diffing two versions.
 
 ## License
 

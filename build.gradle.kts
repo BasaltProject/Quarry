@@ -24,6 +24,7 @@ val vanilla = work.map { it.dir("vanilla") }
 val dump: SourceSet by sourceSets.creating
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     "dumpCompileOnly"(fileTree(vanilla) { include("**/*.jar") })
 }
 
@@ -72,4 +73,22 @@ tasks.register("extract") {
     group = "quarry"
     description = "Reports and dumps for the jar given with -Pquarry.jar=<server.jar>."
     dependsOn(reports, runDumps)
+}
+
+val tablesOut = providers.gradleProperty("quarry.out")
+val tablesStyle = providers.gradleProperty("quarry.style")
+
+tasks.register<JavaExec>("generate") {
+    group = "quarry"
+    description = "Writes server-registry's tables under -Pquarry.out=<dir> and -Pquarry.style=<.clang-format>, from the reports and dumps of extract."
+    dependsOn("extract")
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("org.basaltmc.quarry.MainKt")
+    argumentProviders.add {
+        val serverJar = vanilla.get().asFile.walkTopDown().first { it.name.startsWith("server-") && it.extension == "jar" }
+        listOf(
+            "generate", work.get().dir("generated/reports").asFile.path, work.get().dir("dumps").asFile.path,
+            serverJar.path, tablesOut.get(), providers.gradleProperty("quarry.version").get(), tablesStyle.get(),
+        )
+    }
 }

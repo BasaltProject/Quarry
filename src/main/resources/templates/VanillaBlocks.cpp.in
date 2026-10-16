@@ -1,0 +1,40 @@
+// Generated from the real @version@ server jar. Regenerate rather than edit: every number here is a
+// fact about the game, not a decision.
+
+#include <basalt/server/registry/VanillaBlocks.hpp>
+
+#include <array>
+#include <cstdint>
+
+namespace basalt::server::registry {
+namespace {
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kDefaultBlockStatesTable@> kDefaultBlockStatesTable = {{
+@body:kDefaultBlockStatesTable@
+}};
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kBlockIdsTable@> kBlockIdsTable = {{
+@body:kBlockIdsTable@
+}};
+
+constexpr std::array<std::string_view, @size:kBlockStateDefinitions@> kBlockStateDefinitions = {{
+@body:kBlockStateDefinitions@
+}};
+
+constexpr std::array<BlockHardnessEntry, @size:kBlockHardnessTable@> kBlockHardnessTable = {{
+@body:kBlockHardnessTable@
+}};
+
+} // namespace
+
+std::span<const std::pair<std::int32_t, std::string_view>> defaultBlockStatesTable() {
+    return kDefaultBlockStatesTable;
+}
+
+std::span<const std::pair<std::int32_t, std::string_view>> blockIdsTable() { return kBlockIdsTable; }
+
+std::span<const std::string_view> blockStatePropertiesTable() { return kBlockStateDefinitions; }
+
+std::span<const BlockHardnessEntry> blockHardnessTable() { return kBlockHardnessTable; }
+
+} // namespace basalt::server::registry

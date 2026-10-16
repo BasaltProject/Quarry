@@ -1,0 +1,40 @@
+// Generated from the real @version@ server jar and from the registries vanilla builds in code.
+// Regenerate rather than edit: every number here is a fact about the game, not a decision.
+
+#include <basalt/server/registry/World.hpp>
+
+#include <array>
+#include <cstdint>
+
+namespace basalt::server::registry {
+namespace {
+
+constexpr std::array<std::pair<std::int32_t, std::string_view>, @size:kBiomeIdsTable@> kBiomeIdsTable = {{
+@body:kBiomeIdsTable@
+}};
+
+constexpr std::array<std::string_view, @size:kCustomStatsTable@> kCustomStatsTable = {{
+@body:kCustomStatsTable@
+}};
+
+constexpr std::array<InstrumentEntry, @size:kInstrumentsTable@> kInstrumentsTable = {{
+@body:kInstrumentsTable@
+}};
+
+/// Flattened, with the type repeated on each of its blocks: twenty one types and a hundred
+/// blocks between them, and the rows of one type are contiguous.
+constexpr std::array<std::pair<std::string_view, std::string_view>, @size:kPoiBlocksTable@> kPoiBlocksTable = {{
+@body:kPoiBlocksTable@
+}};
+
+} // namespace
+
+std::span<const std::pair<std::int32_t, std::string_view>> biomeIdsTable() { return kBiomeIdsTable; }
+
+std::span<const std::string_view> customStatsTable() { return kCustomStatsTable; }
+
+std::span<const InstrumentEntry> instrumentsTable() { return kInstrumentsTable; }
+
+std::span<const std::pair<std::string_view, std::string_view>> poiBlocksTable() { return kPoiBlocksTable; }
+
+} // namespace basalt::server::registry

@@ -1,0 +1,55 @@
+// Generated from the real @version@ server jar. Regenerate rather than edit: every number here is a
+// fact about the game, not a decision.
+
+#include <basalt/server/registry/VanillaEntries.hpp>
+
+#include <array>
+
+namespace basalt::server::registry {
+namespace {
+
+constexpr std::array<BlockMovementEntry, @size:kBlockMovementTable@> kBlockMovementTable = {{
+@body:kBlockMovementTable@
+}};
+
+constexpr std::array<BlockSoundTypeEntry, @size:kBlockSoundTypesTable@> kBlockSoundTypesTable = {{
+@body:kBlockSoundTypesTable@
+}};
+
+constexpr std::array<BlockSoundEntry, @size:kBlockSoundsTable@> kBlockSoundsTable = {{
+@body:kBlockSoundsTable@
+}};
+
+constexpr std::array<EntityAttributeEntry, @size:kEntityAttributesTable@> kEntityAttributesTable = {{
+@body:kEntityAttributesTable@
+}};
+
+constexpr std::array<ItemDurabilityEntry, @size:kItemDurabilityTable@> kItemDurabilityTable = {{
+@body:kItemDurabilityTable@
+}};
+
+constexpr std::array<EntityTypeShape, @size:kEntityTypeShapesTable@> kEntityTypeShapesTable = {{
+@body:kEntityTypeShapesTable@
+}};
+
+constexpr std::array<ToolRule, @size:kItemToolsTable@> kItemToolsTable = {{
+@body:kItemToolsTable@
+}};
+
+} // namespace
+
+std::span<const BlockMovementEntry> blockMovementTable() { return kBlockMovementTable; }
+
+std::span<const BlockSoundTypeEntry> blockSoundTypesTable() { return kBlockSoundTypesTable; }
+
+std::span<const BlockSoundEntry> blockSoundsTable() { return kBlockSoundsTable; }
+
+std::span<const EntityAttributeEntry> entityAttributesTable() { return kEntityAttributesTable; }
+
+std::span<const ItemDurabilityEntry> itemDurabilityTable() { return kItemDurabilityTable; }
+
+std::span<const EntityTypeShape> entityTypeShapesTable() { return kEntityTypeShapesTable; }
+
+std::span<const ToolRule> itemToolsTable() { return kItemToolsTable; }
+
+} // namespace basalt::server::registry

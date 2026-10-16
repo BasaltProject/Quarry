@@ -17,6 +17,7 @@ public object Bundler {
 
     /** The real server jar and its libraries, where the bundler would put them itself. */
     public fun unpack(bundler: Path, work: Path): Unpacked {
+        work.toFile().deleteRecursively()
         var server: Path? = null
         val libraries = mutableListOf<Path>()
         ZipFile(bundler.toFile()).use { jar ->
