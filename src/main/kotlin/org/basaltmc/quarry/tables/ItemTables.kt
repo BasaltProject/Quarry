@@ -142,8 +142,10 @@ internal object ItemTables {
                 "minecraft:remove_effects" ->
                     parts.add("remove:${obj["effects"].asText()?.let(::stripNamespace) ?: "null"}")
                 "minecraft:clear_all_effects" -> parts.add("clear")
-                "minecraft:teleport_randomly" ->
-                    parts.add("teleport:${javaFloat(obj["diameter"].let { if (it.isNumber()) it.asDouble() else 16.0 })}")
+                "minecraft:teleport_randomly" -> {
+                    val diameter = obj["diameter"].let { if (it.isNumber()) it.asDouble() else 16.0 }
+                    parts.add("teleport:${javaFloat(diameter)}")
+                }
             }
         }
         return parts.joinToString(";")
