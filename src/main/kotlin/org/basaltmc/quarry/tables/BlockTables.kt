@@ -84,7 +84,8 @@ internal object BlockTables {
         tables["kBlockMovementTable"] =
             movement.map { "{${cstr(it[0])}, ${it[4]}F, ${it[5]}F, ${it[6]}F, ${it[7]}F}" }
         tables["kBlockInstrumentsTable"] = instruments.map { "{${cstr(it[0])}, ${cstr(it[8])}}" }
-        tables["kPortalBlockStateSpecsTable"] = listOf("nether_portal", "end_portal_frame").map { cstr(specs.getValue(it)) }
+        tables["kPortalBlockStateSpecsTable"] =
+            listOf("nether_portal", "end_portal_frame").map { cstr(specs.getValue(it)) }
         tables["kVillageBlockStateSpecsTable"] =
             villageBlocks(serverJar).map { specs.getValue(it) }.sortedBy(::specBase).map(::cstr)
         tables.putAll(soundTables(dumps))
@@ -99,14 +100,15 @@ internal object BlockTables {
         val rows = readTsv(dumps.resolve("block_sounds.tsv")).sortedBy { it[0] }
         val stone = rows.first { it[0] == "stone" }.drop(1)
         val others = rows.map { it.drop(1) }.toSet() - setOf(stone)
-        val order = compareBy<List<String>> { it.drop(2).joinToString("\u0000") }.thenBy { it.take(2).joinToString("\u0000") }
-        val kinds = listOf(stone) + others.sortedWith { left, right -> compareLists(left.drop(2) + left.take(2), right.drop(2) + right.take(2)) }
+        val tail = { kind: List<String> -> kind.drop(2) + kind.take(2) }
+        val kinds = listOf(stone) + others.sortedWith { left, right -> compareLists(tail(left), tail(right)) }
         val index = kinds.withIndex().associate { it.value to it.index }
         return mapOf(
             "kBlockSoundTypesTable" to kinds.map { kind ->
                 "{${kind[0]}F, ${kind[1]}F, ${kind.drop(2).joinToString(", ") { cstr(it) }}}"
             },
-            "kBlockSoundsTable" to rows.filter { it.drop(1) != stone }.map { "{${cstr(it[0])}, ${index.getValue(it.drop(1))}}" },
+            "kBlockSoundsTable" to rows.filter { it.drop(1) != stone }
+                .map { "{${cstr(it[0])}, ${index.getValue(it.drop(1))}}" },
         )
     }
 
@@ -120,7 +122,8 @@ internal object BlockTables {
 
     /** A block state as a template or processor writes it: `{Name}` until 26.2, `{id}` or `id[...]` since. */
     private fun blockName(state: Any?): String = when (state) {
-        is JsonElement -> state.asText()?.substringBefore('[') ?: (state.jsonObject["Name"] ?: state.jsonObject["id"]).asText()!!
+        is JsonElement -> state.asText()?.substringBefore('[')
+            ?: (state.jsonObject["Name"] ?: state.jsonObject["id"]).asText()!!
         is String -> state.substringBefore('[')
         is Map<*, *> -> (state["Name"] ?: state["id"]) as String
         else -> error("block state $state")
@@ -155,7 +158,9 @@ internal object BlockTables {
                     for (palette in palettes) {
                         for (block in palette) names.add(blockName(block))
                     }
-                } else if (entry.startsWith("data/minecraft/worldgen/template_pool/village/") && entry.endsWith(".json")) {
+                } else if (entry.startsWith("data/minecraft/worldgen/template_pool/village/") &&
+                    entry.endsWith(".json")
+                ) {
                     val elements = parseJson(jar.getInputStream(jar.getEntry(entry)).bufferedReader().readText())
                         .jsonObject.getValue("elements").jsonArray
                     for (element in elements) {
@@ -195,7 +200,9 @@ internal object BlockTables {
                     val tagged = resolveTag(serverJar, "block", "minecraft:blocks_motion")
                     val owner = HashMap<Int, String>()
                     for ((name, block) in blocks) {
-                        for (state in block.jsonObject.getValue("states").jsonArray) owner[state.jsonObject.getValue("id").asInt()] = name
+                        for (state in block.jsonObject.getValue("states").jsonArray) {
+                            owner[state.jsonObject.getValue("id").asInt()] = name
+                        }
                     }
                     blocksMotion = owner.mapValues { it.value in tagged }
                 }

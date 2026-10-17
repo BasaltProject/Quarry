@@ -59,11 +59,19 @@ public object Generate {
     }
 
     /** Writes the sources under [out], formatted with the `.clang-format` at [style]. */
-    public fun write(reportsDir: Path, dumps: Path, serverJar: Path, out: Path, version: String, style: Path): List<Path> {
+    public fun write(
+        reportsDir: Path,
+        dumps: Path,
+        serverJar: Path,
+        out: Path,
+        version: String,
+        style: Path,
+    ): List<Path> {
         val tables = tables(Reports(reportsDir), dumps, serverJar)
         val written = ArrayList<Path>()
         for ((name, folder) in outputs) {
-            val template = (Generate::class.java.getResourceAsStream("/templates/$name.in") ?: error("no template $name"))
+            val source = Generate::class.java.getResourceAsStream("/templates/$name.in") ?: error("no template $name")
+            val template = source
                 .bufferedReader().readText()
             val target = out.resolve(folder).resolve(name)
             target.parent.createDirectories()

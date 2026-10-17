@@ -43,7 +43,8 @@ internal object Recipes {
             return when (val kind = obj["type"].asText()) {
                 "minecraft:constant" -> obj.getValue("value").asDouble()
                 "minecraft:conditional" -> {
-                    val chosen = if (test(obj.getValue("condition"), block)) obj.getValue("on_true") else obj.getValue("on_false")
+                    val holds = test(obj.getValue("condition"), block)
+                    val chosen = if (holds) obj.getValue("on_true") else obj.getValue("on_false")
                     number(chosen, folder, block)
                 }
                 "minecraft:div" -> {
@@ -66,14 +67,14 @@ internal object Recipes {
                 val fuel = parts["minecraft:cooking_fuel"].objectOrNull() ?: continue
                 val ticks = data.number(fuel.getValue("burn_time"), "context_int_provider", FURNACE).toLong()
                 val speed = fuel["speed_multiplier"]?.let { data.number(it, "context_float_provider", FURNACE) } ?: 1.0
-                if (speed != 1.0) warn("$item cooks at ${javaFloat(speed)}x in a furnace, which the fuel table cannot say")
+                if (speed != 1.0) warn("$item cooks at ${javaFloat(speed)}x in a furnace, which the table cannot say")
                 if (ticks > 0) rows.add("{${cstr(item)}, $ticks}")
             }
         }
         return rows
     }
 
-    /** The `minecraft:brewing` recipes, folded back into potion mixes (any bottle) and container mixes (any contents). */
+    /** The `minecraft:brewing` recipes, folded back into potion mixes (any bottle) and container mixes. */
     fun brewing(serverJar: Path, potions: List<String>): List<String> {
         val potionMixes = LinkedHashMap<Triple<String, String, String>, MutableSet<String>>()
         val containerMixes = LinkedHashMap<Triple<String, String, String>, MutableSet<String>>()
@@ -88,7 +89,8 @@ internal object Recipes {
                 val reagent = recipe.getValue("reagent").jsonObject.getValue("item").asText()
                 val output = recipe.getValue("output").jsonObject
                 val result = output.getValue("id").asText()
-                val after = output["components"].objectOrNull()?.get("minecraft:potion_contents").objectOrNull()?.get("potion").asText()
+                val contents = output["components"].objectOrNull()?.get("minecraft:potion_contents")
+                val after = contents.objectOrNull()?.get("potion").asText()
                 require(bottle != null && before != null && reagent != null && result != null) {
                     "$name names a list or a tag, which the brewing table cannot hold"
                 }
@@ -104,12 +106,16 @@ internal object Recipes {
         val bottles = potionMixes.values.flatten().toSet()
         val rows = ArrayList<String>()
         for ((key, madeIn) in potionMixes) {
-            if (madeIn != bottles) warn("${key.first} + ${key.second} only brews in ${madeIn.sorted()}, the table says any bottle")
+            if (madeIn != bottles) {
+                warn("${key.first} + ${key.second} only brews in ${madeIn.sorted()}, the table says any bottle")
+            }
             rows.add(mix("potionMixes", key))
         }
         for ((key, contents) in containerMixes) {
             val missing = (potions.toSet() - contents).sorted()
-            if (missing.isNotEmpty()) warn("${key.first} + ${key.second} does not take $missing, the table says any contents")
+            if (missing.isNotEmpty()) {
+                warn("${key.first} + ${key.second} does not take $missing, the table says any contents")
+            }
             rows.add(mix("containerMixes", key))
         }
         return rows

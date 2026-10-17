@@ -73,7 +73,11 @@ internal object ItemTables {
 
     /** Only modifiers on an armour slot count: a weapon's damage lives in the same component. */
     private fun armourOf(item: String, modifiers: List<JsonElement>): String? {
-        val values = linkedMapOf("minecraft:armor" to 0.0, "minecraft:armor_toughness" to 0.0, "minecraft:knockback_resistance" to 0.0)
+        val values = linkedMapOf(
+            "minecraft:armor" to 0.0,
+            "minecraft:armor_toughness" to 0.0,
+            "minecraft:knockback_resistance" to 0.0,
+        )
         var slot = ""
         for (modifier in modifiers) {
             val where = modifier.jsonObject["slot"].asText()
@@ -135,10 +139,11 @@ internal object ItemTables {
                         },
                     )
                 }
-                "minecraft:remove_effects" -> parts.add("remove:${obj["effects"].asText()?.let(::stripNamespace) ?: "null"}")
+                "minecraft:remove_effects" ->
+                    parts.add("remove:${obj["effects"].asText()?.let(::stripNamespace) ?: "null"}")
                 "minecraft:clear_all_effects" -> parts.add("clear")
                 "minecraft:teleport_randomly" ->
-                    parts.add("teleport:${javaFloat(if (obj["diameter"].isNumber()) obj["diameter"].asDouble() else 16.0)}")
+                    parts.add("teleport:${javaFloat(obj["diameter"].let { if (it.isNumber()) it.asDouble() else 16.0 })}")
             }
         }
         return parts.joinToString(";")
@@ -146,8 +151,9 @@ internal object ItemTables {
 
     fun harness(dumps: Path): Map<String, Any> {
         val items = readTsv(dumps.resolve("items.tsv"))
-        val remainders = items.filter { it[0] == "REMAINDER" }.map { it[1] to it[2] }.sortedWith(compareBy({ it.first }, { it.second }))
-        val placed = items.filter { it[0] == "BLOCK" && it[1] != it[2] }.map { it[1] to it[2] }.sortedWith(compareBy({ it.first }, { it.second }))
+        val byPair = compareBy<Pair<String, String>>({ it.first }, { it.second })
+        val remainders = items.filter { it[0] == "REMAINDER" }.map { it[1] to it[2] }.sortedWith(byPair)
+        val placed = items.filter { it[0] == "BLOCK" && it[1] != it[2] }.map { it[1] to it[2] }.sortedWith(byPair)
         val entityRows = readTsv(dumps.resolve("entities.tsv"))
         val entityTypes = entityRows.filter { it[0] == "TYPE" }.map { it.drop(1) }
         val attributes = entityRows.filter { it[0] == "ATTRIBUTE" }.map { it.drop(1) }
@@ -172,8 +178,7 @@ internal object ItemTables {
         val world = readTsv(dumps.resolve("world.tsv"))
         val biomes = world.filter { it[0] == "BIOME" }.map { it[1] }
         val overworld = resolveTag(serverJar, "worldgen/biome", "minecraft:is_overworld")
-        // The overworld first, then the rest in bootstrap order: the ids of the original overworld biomes
-        // predate the nether, the end and the void.
+        // The overworld first, then the rest in bootstrap order: the original biome ids predate the other dimensions.
         val ordered = biomes.filter { "minecraft:$it" in overworld } + biomes.filter { "minecraft:$it" !in overworld }
         return mapOf(
             "kBiomeIdsTable" to idPairs(ordered.withIndex().map { it.index to it.value }),

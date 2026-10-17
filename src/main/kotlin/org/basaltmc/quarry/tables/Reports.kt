@@ -24,7 +24,8 @@ internal fun JsonElement?.isNumber(): Boolean =
 
 internal fun JsonElement?.asDouble(): Double = (this as JsonPrimitive).content.toDouble()
 
-internal fun JsonElement?.asInt(): Int = (this as JsonPrimitive).content.let { it.toIntOrNull() ?: it.toDouble().toInt() }
+internal fun JsonElement?.asInt(): Int =
+    (this as JsonPrimitive).content.let { it.toIntOrNull() ?: it.toDouble().toInt() }
 
 internal fun JsonElement?.asText(): String? = if (this is JsonPrimitive && isString) content else null
 
@@ -65,7 +66,8 @@ internal fun resolveTag(serverJar: Path, registry: String, tag: String): Set<Str
             val namespace = name.substringBefore(':')
             val path = name.substringAfter(':')
             val entry = jar.getEntry("data/$namespace/tags/$registry/$path.json")
-            val values = parseJson(jar.getInputStream(entry).bufferedReader().readText()).jsonObject.getValue("values").jsonArray
+            val file = parseJson(jar.getInputStream(entry).bufferedReader().readText()).jsonObject
+            val values = file.getValue("values").jsonArray
             for (value in values) {
                 val text = if (value is JsonObject) value.getValue("id").asText()!! else value.asText()!!
                 if (text.startsWith("#")) visit(text.substring(1)) else members.add(text)

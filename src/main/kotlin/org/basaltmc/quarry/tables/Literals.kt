@@ -45,4 +45,5 @@ internal fun readTsv(path: Path): List<List<String>> =
 internal fun stripNamespace(name: String): String = name.removePrefix("minecraft:")
 
 /** `{number, "name"}` for each pair. */
-internal fun idPairs(pairs: List<Pair<Int, String>>): List<String> = pairs.map { (number, name) -> "{$number, ${cstr(name)}}" }
+internal fun idPairs(pairs: List<Pair<Int, String>>): List<String> =
+    pairs.map { (number, name) -> "{$number, ${cstr(name)}}" }
