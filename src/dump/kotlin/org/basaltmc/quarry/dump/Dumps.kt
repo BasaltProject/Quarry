@@ -22,9 +22,11 @@ import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.SupportType
 import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument
 import net.minecraft.world.level.material.MapColor
+import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 
@@ -114,6 +116,12 @@ private fun supports(state: BlockState, direction: Direction, support: SupportTy
         false
     }
 
+private fun offsetMax(block: Block, name: String): String {
+    val method = BlockBehaviour::class.java.getDeclaredMethod(name)
+    method.isAccessible = true
+    return (method.invoke(block) as Float).toString()
+}
+
 private fun flag(value: Boolean): Char = if (value) '1' else '0'
 
 /**
@@ -136,6 +144,42 @@ internal fun dumpShapes(out: PrintWriter) {
             val boxes = collision.toAabbs().joinToString(";") {
                 "${it.minX},${it.minY},${it.minZ},${it.maxX},${it.maxY},${it.maxZ}"
             }
+            val offset = try {
+                state.getOffset(BlockPos.ZERO)
+            } catch (_: Throwable) {
+                Vec3.ZERO
+            }
+            val outline = try {
+                state.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty())
+            } catch (_: Throwable) {
+                collision
+            }
+            val probe = BlockPos(5, 0, 3)
+            val moved = state.hasOffsetFunction() && try {
+                state.getShape(EmptyBlockGetter.INSTANCE, probe, CollisionContext.empty()).toAabbs() !=
+                    outline.toAabbs()
+            } catch (_: Throwable) {
+                false
+            }
+            val outlineBoxes = outline.toAabbs().joinToString(";") {
+                val base = if (moved) it.move(-offset.x, -offset.y, -offset.z) else it
+                "${base.minX},${base.minY},${base.minZ},${base.maxX},${base.maxY},${base.maxZ}"
+            }
+            val visual = try {
+                state.getVisualShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO, CollisionContext.empty())
+            } catch (_: Throwable) {
+                collision
+            }
+            val visualBoxes = visual.toAabbs().joinToString(";") {
+                "${it.minX},${it.minY},${it.minZ},${it.maxX},${it.maxY},${it.maxZ}"
+            }
+            val block = state.block
+            val offsetKind = if (!moved) '0' else if ((0..63).any {
+                    state.getOffset(BlockPos(it, 0, it * 7)).y != 0.0
+                }
+            ) '2' else '1'
+            val maxHorizontal = offsetMax(block, "getMaxHorizontalOffset")
+            val maxVertical = offsetMax(block, "getMaxVerticalOffset")
             val sturdy = StringBuilder()
             val centre = StringBuilder()
             val rigid = StringBuilder()
@@ -151,7 +195,9 @@ internal fun dumpShapes(out: PrintWriter) {
                 .append(motion).append('\t').append(flag(state.canBeReplaced())).append('\t')
                 .append(flag(state.isSolid)).append('\t').append(flag(state.isSolidRender)).append('\t')
                 .append(sturdy).append('\t').append(centre).append('\t').append(rigid).append('\t')
-                .append(occlusionFull).append('\t').append(boxes).append('\n')
+                .append(occlusionFull).append('\t').append(boxes).append('\t').append(outlineBoxes).append('\t')
+                .append(offsetKind).append('\t').append(maxHorizontal).append('\t').append(maxVertical).append('\t')
+                .append(visualBoxes).append('\n')
         }
     }
 }

@@ -56,6 +56,12 @@ constexpr std::array<std::string_view, @size:kBlockShapes@> kBlockShapes = {{
 
 const std::string kBlockShapeIndexTable = join(@join:kBlockShapeIndexTable@);
 
+constexpr std::array<std::string_view, @size:kBlockOutlines@> kBlockOutlines = {{
+@body:kBlockOutlines@
+}};
+
+const std::string kBlockOutlineIndexTable = join(@join:kBlockOutlineIndexTable@);
+
 constexpr std::array<std::string_view, @size:kSupportRulesTable@> kSupportRulesTable = {{
 @body:kSupportRulesTable@
 }};
@@ -165,6 +171,10 @@ std::span<const std::pair<std::string_view, std::string_view>> blockEntityOwners
 std::span<const std::string_view> blockShapeSpecsTable() { return kBlockShapes; }
 
 std::string_view blockShapeIndexTable() { return kBlockShapeIndexTable; }
+
+std::span<const std::string_view> blockOutlineSpecsTable() { return kBlockOutlines; }
+
+std::string_view blockOutlineIndexTable() { return kBlockOutlineIndexTable; }
 
 std::span<const std::string_view> supportRulesTable() { return kSupportRulesTable; }
 

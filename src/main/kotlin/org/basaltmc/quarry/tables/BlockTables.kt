@@ -191,6 +191,8 @@ internal object BlockTables {
     private fun shapeTables(dumps: Path, blocks: JsonObject, serverJar: Path): Map<String, Any> {
         val entries = LinkedHashMap<String, Int>()
         val index = HashMap<Int, Int>()
+        val outlines = LinkedHashMap<String, Int>()
+        val outlineIndex = HashMap<Int, Int>()
         var blocksMotion: Map<Int, Boolean>? = null
         for (original in readTsv(dumps.resolve("shapes.tsv"))) {
             val row = original.toMutableList()
@@ -212,12 +214,18 @@ internal object BlockTables {
                 .joinToString(";") { box -> box.split(',').joinToString(",") { thirtySeconds(it) } }
             val entry = row.subList(1, 10).joinToString("|") + "|" + boxes
             index[row[0].toInt()] = entries.getOrPut(entry) { entries.size }
+            val outline = "${row[12]}|${row[13]}|${row[14]}|${row[11]}|${row[15]}"
+            outlineIndex[row[0].toInt()] = outlines.getOrPut(outline) { outlines.size }
         }
         val byState = IntArray(index.keys.max() + 1)
         for ((state, entry) in index) byState[state] = entry
+        val outlineByState = IntArray(outlineIndex.keys.max() + 1)
+        for ((state, entry) in outlineIndex) outlineByState[state] = entry
         return mapOf(
             "kBlockShapes" to entries.keys.map(::cstr),
             "kBlockShapeIndexTable" to joinLiteral(encodeIndex(byState.toList())),
+            "kBlockOutlines" to outlines.keys.map(::cstr),
+            "kBlockOutlineIndexTable" to joinLiteral(encodeIndex(outlineByState.toList())),
         )
     }
 

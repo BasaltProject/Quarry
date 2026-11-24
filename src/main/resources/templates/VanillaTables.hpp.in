@@ -69,6 +69,12 @@ struct FireOddsEntry {
 /// fits here in a few hundred.
 [[nodiscard]] std::string_view blockShapeIndexTable();
 
+/// Selection and visual boxes with the offset kind and limits, before applying the position-dependent offset.
+[[nodiscard]] std::span<const std::string_view> blockOutlineSpecsTable();
+
+/// Index into blockOutlineSpecsTable(), encoded like blockShapeIndexTable().
+[[nodiscard]] std::string_view blockOutlineIndexTable();
+
 /// What each block state needs around it to stay put, asked of the real block classes.
 ///
 /// One rule per distinct answer. Each rule is twelve fields: six directions dry, then the same
